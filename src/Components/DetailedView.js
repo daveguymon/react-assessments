@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { updateTask, getTasks } from './../ducks/reducer';
+import { getTasks } from './../ducks/reducer';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -18,11 +18,11 @@ class DetailedView extends Component{
     this.props.getTasks();
   }
 
-  componentWillUpdate(nextProps,nextStates){
+  componentWillReceiveProps(nextProps){
     this.setState({
-      title: this.props.tasks[this.props.match.params.id].title,
-      description: this.props.tasks[this.props.match.params.id].description,
-      completed: this.props.tasks[this.props.match.params.id].completed
+      title: nextProps.tasks[this.props.match.params.id].title,
+      description: nextProps.tasks[this.props.match.params.id].description,
+      completed: nextProps.tasks[this.props.match.params.id].completed
     })
   }
 
@@ -42,6 +42,7 @@ onDescriptionChange(event){
 changeTitle(){
   axios.patch(`https://practiceapi.devmountain.com/api/tasks/${this.props.tasks[this.props.match.params.id].id}`, {title: this.state.title})
   .then(res => {
+    this.props.getTasks()
     this.setState({
       title: ''
     })
@@ -52,6 +53,7 @@ changeTitle(){
   changeDescription(){
     axios.patch(`https://practiceapi.devmountain.com/api/tasks/${this.props.tasks[this.props.match.params.id].id}`, {description: this.state.description})
     .then(res => {
+      this.props.getTasks()
       this.setState({
         description: ''
       })
@@ -115,4 +117,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps, { updateTask, getTasks })(DetailedView);
+export default connect(mapStateToProps, { getTasks })(DetailedView);
