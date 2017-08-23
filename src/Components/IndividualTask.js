@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
+import { deleteTodo, getTasks } from './../ducks/reducer';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { deleteTodo } from './../ducks/reducer';
+import axios from 'axios';
+
 
 class IndividualTask extends Component {
   constructor(props){
     super(props);
-    this.state={
-      completed: false
-    }
 
     this.markComplete = this.markComplete.bind(this);
 
@@ -20,16 +20,28 @@ markComplete(){
   })
 }
 
+
+deleteTask(){
+  axios.delete(`https://practiceapi.devmountain.com/api/tasks/${this.props.id}`)
+  .then(res => this.props.getTasks())
+}
+
+completeTask(){
+  axios.patch(`https://practiceapi.devmountain.com/api/tasks/${this.props.id}`, {completed: !this.props.completed}).then(res => this.props.getTasks())
+}
+
   render() {
     const completedStyle={ textDecoration: "line-through", color: "grey" }
 
     return (
       <div>
-        <p style={ this.state.completed ? completedStyle : null } >{this.props.title}</p>
+        <Link to={'/' + this.props.index}>
+          <p style={ this.props.completed ? completedStyle : null } >{this.props.title}</p>
+        </Link>
 
-        <button onClick={ this.markComplete } disabled={ this.state.completed } >COMPLETE</button>
+        <button onClick={ this.completeTask.bind(this) }  >COMPLETE</button>
 
-        <button onClick={ ()=> this.props.deleteTodo(this.props.id) }>DELETE</button>
+        <button onClick={this.deleteTask.bind(this) }>DELETE</button>
       </div>
     )
   }
@@ -37,4 +49,4 @@ markComplete(){
 
 
 
-export default connect(null, { deleteTodo })(IndividualTask);
+export default connect(null, { deleteTodo, getTasks })(IndividualTask);

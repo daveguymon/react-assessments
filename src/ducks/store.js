@@ -1,4 +1,10 @@
-import { createStore } from 'redux';
-import reducer from './reducer';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import middleware from 'redux-promise-middleware';
+import tasksReducer from './reducer';
 
-export default createStore( reducer );
+const reducer = combineReducers({ tasks: tasksReducer }) 
+
+export default createStore(
+  reducer,
+  applyMiddleware(middleware())
+);
